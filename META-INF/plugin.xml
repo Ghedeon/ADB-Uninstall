@@ -1,0 +1,38 @@
+<idea-plugin version="2">
+    <id>com.redpants.uninstall.plugin.id</id>
+    <name>ADB Uninstall</name>
+    <version>1.0</version>
+    <vendor email="vitali.vasilioglo@gmail.com">Red Pants Company</vendor>
+
+    <description>Provides simple visual uninstalling support for the current application.</description>
+
+    <change-notes><![CDATA[]]>
+    </change-notes>
+
+    <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
+    <!--<idea-version since-build="107.105"/>-->
+
+    <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+         on how to target different products -->
+    <depends>org.jetbrains.android</depends>
+
+    <application-components>
+        <!-- Add your application components here -->
+    </application-components>
+
+    <project-components>
+        <!-- Add your project components here -->
+    </project-components>
+
+    <actions>
+        <action id="ADB Uninstall" class="com.uninstall.impl.UninstallAction" text="ADB uninstall" description="Uninstalls application" icon="/icons/icon.png">
+            <add-to-group group-id="AndroidToolsGroup"/>
+            <add-to-group group-id="ToolbarRunGroup" anchor="after" relative-to-action="RunnerActions"/>
+            <keyboard-shortcut first-keystroke="altGraph U" keymap="$default"/>
+        </action>
+    </actions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+</idea-plugin>
