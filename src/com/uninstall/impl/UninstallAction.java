@@ -16,26 +16,26 @@
 
 package com.uninstall.impl;
 
+import com.intellij.execution.RunManager;
+import com.intellij.execution.configurations.ModuleBasedConfiguration;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.uninstall.impl.model.Device;
 import com.uninstall.impl.presentation.DeviceChooserDialog;
+import org.jetbrains.annotations.NotNull;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,14 +52,15 @@ public class UninstallAction extends AnAction {
      * used for EventLog messages
      */
     public static final String ADB_UNINSTALLER_ID = "ADB Uninstall";
+    public static final String NOTIFICATION_TITLE = ADB_UNINSTALLER_ID;
 
-    private static final String MANUFACTURER       = "ro.product.manufacturer";
-    private static final String MODEL              = "ro.product.model";
-    private static final String RELEASE_VERSION    = "ro.build.version.release";
-    private static final String API_VERSION        = "ro.build.version.sdk";
-    public static final  String PLATFORM_TOOLS_DIR = "platform-tools";
+    public static final String PLATFORM_TOOLS_DIR = "platform-tools";
+    private static final String MANUFACTURER = "ro.product.manufacturer";
+    private static final String MODEL = "ro.product.model";
+    private static final String RELEASE_VERSION = "ro.build.version.release";
+    private static final String API_VERSION = "ro.build.version.sdk";
     private AnActionEvent event;
-    private String        toolPath;
+    private String toolPath;
 
     /**
      * {@inheritDoc}
@@ -67,7 +68,14 @@ public class UninstallAction extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent event) {
         this.event = event;
-        String sdkPath = ProjectRootManager.getInstance(event.getProject()).getProjectSdk().getHomePath();
+        String sdkPath;
+        Sdk projectSdk = ProjectRootManager.getInstance(event.getProject()).getProjectSdk();
+        if (projectSdk != null) {
+            sdkPath = projectSdk.getHomePath();
+        } else {
+            showNotification("Project SDK is not defined", NotificationType.ERROR);
+            return;
+        }
         toolPath = sdkPath + File.separator + PLATFORM_TOOLS_DIR;
         List<Device> devices = getAvailableDevices();
         DeviceChooserDialog deviceChooser = new DeviceChooserDialog(false);
@@ -79,9 +87,9 @@ public class UninstallAction extends AnAction {
             for (Device device : selectedDevices) {
                 try {
                     uninstallFromDevice(device);
-                }
-                catch (Exception e) {
-                    e.printStackTrace();
+                } catch (Exception ex) {
+                    showNotification(ex.getMessage(), NotificationType.ERROR);
+                    ex.printStackTrace();
                 }
             }
         }
@@ -94,25 +102,30 @@ public class UninstallAction extends AnAction {
      * @throws XMLStreamException
      * @throws FileNotFoundException
      */
-    private void uninstallFromDevice(Device device) throws XMLStreamException, FileNotFoundException {
-        String packageName = parseAndroidXmlForPackageName();
-        //TODO: should switch to GeneralCommandLine here
-        Runtime rt = Runtime.getRuntime();
+    private void uninstallFromDevice(Device device) throws UninstallException {
         try {
+            String packageName = parseAndroidXmlForPackageName();
+            //TODO: should switch to GeneralCommandLine here
+            Runtime rt = Runtime.getRuntime();
             Process pr = rt
                     .exec(toolPath + File.separator + "adb -s " + device.getSerialNumber() + " uninstall "
                             + packageName);
             BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             String line;
             while ((line = input.readLine()) != null) {
-                Notifications.Bus.notify(new Notification(ADB_UNINSTALLER_ID,
-                        "Uninstalling " + packageName + " from " + device.getName(), line,
-                        NotificationType.INFORMATION));
+                String message = "Uninstalling " + packageName + " from " + device.getName() + ": " + line;
+                showNotification(message, NotificationType.INFORMATION);
             }
+        } catch (Exception ex) {
+            throw new UninstallException(ex.getMessage());
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+
+    }
+
+    private void showNotification(@NotNull String message, @NotNull NotificationType type) {
+        Notifications.Bus.notify(new Notification(ADB_UNINSTALLER_ID,
+                NOTIFICATION_TITLE, message,
+                type));
     }
 
     /**
@@ -122,21 +135,47 @@ public class UninstallAction extends AnAction {
      * @throws XMLStreamException
      * @throws FileNotFoundException
      */
-    private String parseAndroidXmlForPackageName() throws XMLStreamException, FileNotFoundException {
-        String projectFilePath = getEventProject(event).getBasePath();
-        XMLInputFactory factory = XMLInputFactory.newInstance();
-        XMLStreamReader reader = factory
-                .createXMLStreamReader(new FileReader(projectFilePath + File.separator + "AndroidManifest.xml"));
-        while (reader.hasNext()) {
-            int event = reader.next();
-            switch (event) {
-                case XMLStreamConstants.START_ELEMENT:
-                    if ("manifest".equals(reader.getLocalName())) {
-                        return reader.getAttributeValue(null, "package");
-                    }
+    private String parseAndroidXmlForPackageName() throws ParseException {
+        RunManager runManager = RunManager.getInstance(event.getProject());
+        String currentModuleFilePath;
+        ModuleBasedConfiguration selectedConfiguration = (ModuleBasedConfiguration) runManager.getSelectedConfiguration().getConfiguration();
+        if (selectedConfiguration != null) {
+            Module module = selectedConfiguration.getConfigurationModule().getModule();
+            if (module != null) {
+                currentModuleFilePath = module.getModuleFilePath();
+            } else {
+                throw new ParseException("Module is not specified for selected Run Configuration");
             }
+        } else {
+            throw new ParseException("RunConfiguration not found");
         }
-        return null;
+        try {
+            //TODO find better way to achieve module root path
+            String currentModulePath = currentModuleFilePath.substring(0, currentModuleFilePath.lastIndexOf(File.separator));
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            XMLStreamReader reader;
+            try {
+                // gradle project
+                reader = factory.createXMLStreamReader(new FileReader(currentModulePath + File.separator + "src" + File.separator + "main" + File.separator + "AndroidManifest.xml"));
+            } catch (FileNotFoundException ex) {
+                // old style project
+                reader = factory.createXMLStreamReader(new FileReader(currentModulePath + File.separator + "AndroidManifest.xml"));
+            }
+
+            while (reader.hasNext()) {
+                int event = reader.next();
+                switch (event) {
+                    case XMLStreamConstants.START_ELEMENT:
+                        if ("manifest".equals(reader.getLocalName())) {
+                            return reader.getAttributeValue(null, "package");
+                        }
+                }
+            }
+        } catch (Exception ex) {
+            throw new ParseException(ex.getMessage());
+        }
+
+        throw new ParseException("Package not found");
     }
 
     /**
@@ -167,10 +206,8 @@ public class UninstallAction extends AnAction {
                     }
                 }
             }
-            int exitVal = pr.waitFor();
-            System.out.println("Exited with error code " + exitVal);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
+            showNotification(ex.getMessage(), NotificationType.ERROR);
             ex.printStackTrace();
         }
         return devices;
@@ -203,8 +240,8 @@ public class UninstallAction extends AnAction {
             device.setModel(properties.get(MODEL));
             device.setReleaseVersion(properties.get(RELEASE_VERSION));
             device.setApiVersion(properties.get(API_VERSION));
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
+            showNotification(ex.getMessage(), NotificationType.ERROR);
             ex.printStackTrace();
         }
     }
