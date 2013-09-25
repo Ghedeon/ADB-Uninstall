@@ -37,10 +37,10 @@ import java.util.List;
  */
 public class DeviceChooserDialog extends DialogWrapper implements ItemListener {
 
-    private JPanel       contentPane;
-    private JTable       jTable;
-    private JCheckBox    allCheckbox;
-    private List<Device> devices;
+    private JPanel contentPane;
+    private JTable jTable;
+    private JCheckBox allCheckbox;
+    private List<Device> devices = new ArrayList<Device>();
 
     public DeviceChooserDialog(@Nullable Project project, boolean canBeParent) {
         super(project, canBeParent);
@@ -71,7 +71,10 @@ public class DeviceChooserDialog extends DialogWrapper implements ItemListener {
     }
 
     public void setDeviceList(List<Device> devices) {
-        this.devices = devices;
+        this.devices.clear();
+        if (devices != null) {
+            this.devices.addAll(devices);
+        }
         jTable.setModel(new DevicesTableModel(devices));
         if (devices.size() > 0) {
             jTable.setRowSelectionInterval(0, 0);
@@ -101,8 +104,7 @@ public class DeviceChooserDialog extends DialogWrapper implements ItemListener {
     public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
             jTable.setRowSelectionInterval(0, jTable.getRowCount() - 1);
-        }
-        else {
+        } else {
             jTable.setRowSelectionInterval(0, 0);
         }
     }
