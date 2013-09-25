@@ -53,7 +53,6 @@ public class UninstallAction extends AnAction {
      */
     public static final String ADB_UNINSTALLER_ID = "ADB Uninstall";
     public static final String NOTIFICATION_TITLE = ADB_UNINSTALLER_ID;
-
     public static final String PLATFORM_TOOLS_DIR = "platform-tools";
     private static final String MANUFACTURER = "ro.product.manufacturer";
     private static final String MODEL = "ro.product.model";
@@ -83,14 +82,17 @@ public class UninstallAction extends AnAction {
         deviceChooser.show();
         int exitCode = deviceChooser.getExitCode();
         if (exitCode == DialogWrapper.OK_EXIT_CODE) {
-            List<Device> selectedDevices = deviceChooser.getSelectedDevices();
-            for (Device device : selectedDevices) {
-                try {
-                    uninstallFromDevice(device);
-                } catch (Exception ex) {
-                    showNotification(ex.getMessage(), NotificationType.ERROR);
-                    ex.printStackTrace();
+            try {
+                List<Device> selectedDevices = deviceChooser.getSelectedDevices();
+                if (selectedDevices.size() > 0) {
+                    String packageName = parseAndroidXmlForPackageName();
+                    for (Device device : selectedDevices) {
+                        uninstallFromDevice(device, packageName);
+                    }
                 }
+            } catch (Exception ex) {
+                showNotification(ex.getMessage(), NotificationType.ERROR);
+                ex.printStackTrace();
             }
         }
     }
@@ -98,13 +100,13 @@ public class UninstallAction extends AnAction {
     /**
      * Performs <code>"adb uninstall"</code> command for given device
      *
-     * @param device {@link Device} object
+     * @param device      {@link com.uninstall.impl.model.Device} object
+     * @param packageName name of the package should be uninstalled
      * @throws XMLStreamException
      * @throws FileNotFoundException
      */
-    private void uninstallFromDevice(Device device) throws UninstallException {
+    private void uninstallFromDevice(Device device, String packageName) throws UninstallException {
         try {
-            String packageName = parseAndroidXmlForPackageName();
             //TODO: should switch to GeneralCommandLine here
             Runtime rt = Runtime.getRuntime();
             Process pr = rt
