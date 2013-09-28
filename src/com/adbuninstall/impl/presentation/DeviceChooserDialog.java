@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.uninstall.impl.presentation;
+package com.adbuninstall.impl.presentation;
 
+import com.adbuninstall.impl.model.Device;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.uninstall.impl.model.Device;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

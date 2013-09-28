@@ -6,11 +6,12 @@
 
     <description>Provides simple visual uninstalling support for the current application.</description>
 
-    <change-notes><![CDATA[]]>
+    <change-notes>
+        <![CDATA[]]>
     </change-notes>
 
     <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
-    <!--<idea-version since-build="107.105"/>-->
+    <idea-version since-build="93.13"/>
 
     <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
          on how to target different products -->
@@ -25,7 +26,7 @@
     </project-components>
 
     <actions>
-        <action id="ADB Uninstall" class="com.uninstall.impl.UninstallAction" text="ADB uninstall" description="Uninstalls application" icon="/icons/icon.png">
+        <action id="ADB Uninstall" class="com.adbuninstall.impl.UninstallAction" text="ADB uninstall" description="Uninstalls application" icon="/icons/icon.png">
             <add-to-group group-id="AndroidToolsGroup"/>
             <add-to-group group-id="ToolbarRunGroup" anchor="after" relative-to-action="RunnerActions"/>
             <keyboard-shortcut first-keystroke="altGraph U" keymap="$default"/>
