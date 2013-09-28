@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.uninstall.impl;
+package com.adbuninstall.impl;
 
 /**
  * Thrown in case of parsing errors.

@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package com.uninstall.impl;
+package com.adbuninstall.impl;
 
+import com.adbuninstall.impl.model.Device;
+import com.adbuninstall.impl.presentation.DeviceChooserDialog;
 import com.intellij.execution.RunManager;
+import com.intellij.execution.RunnerAndConfigurationSettings;
+import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.ModuleBasedConfiguration;
+import com.intellij.execution.configurations.ParametersList;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
@@ -27,8 +32,7 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.DialogWrapper;
-import com.uninstall.impl.model.Device;
-import com.uninstall.impl.presentation.DeviceChooserDialog;
+import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.NotNull;
 
 import javax.xml.stream.XMLInputFactory;
@@ -59,7 +63,7 @@ public class UninstallAction extends AnAction {
     private static final String RELEASE_VERSION = "ro.build.version.release";
     private static final String API_VERSION = "ro.build.version.sdk";
     private AnActionEvent event;
-    private String toolPath;
+    private GeneralCommandLine adbCmd = new GeneralCommandLine();
 
     /**
      * {@inheritDoc}
@@ -75,8 +79,9 @@ public class UninstallAction extends AnAction {
             showNotification("Project SDK is not defined", NotificationType.ERROR);
             return;
         }
-        toolPath = sdkPath + File.separator + PLATFORM_TOOLS_DIR;
-        List<Device> devices = getAvailableDevices();
+        String toolPath = sdkPath + File.separator + PLATFORM_TOOLS_DIR;
+        adbCmd.setExePath(toolPath + File.separator + "adb");
+        List devices = getAvailableDevices();
         DeviceChooserDialog deviceChooser = new DeviceChooserDialog(false);
         deviceChooser.setDeviceList(devices);
         deviceChooser.show();
@@ -100,18 +105,21 @@ public class UninstallAction extends AnAction {
     /**
      * Performs <code>"adb uninstall"</code> command for given device
      *
-     * @param device      {@link com.uninstall.impl.model.Device} object
+     * @param device      {@link com.adbuninstall.impl.model.Device} object
      * @param packageName name of the package should be uninstalled
      * @throws XMLStreamException
      * @throws FileNotFoundException
      */
     private void uninstallFromDevice(Device device, String packageName) throws UninstallException {
         try {
-            //TODO: should switch to GeneralCommandLine here
-            Runtime rt = Runtime.getRuntime();
-            Process pr = rt
-                    .exec(toolPath + File.separator + "adb -s " + device.getSerialNumber() + " uninstall "
-                            + packageName);
+            ParametersList params = adbCmd.getParametersList();
+            params.clearAll();
+            params.add("-s");
+            params.add(device.getSerialNumber());
+            params.add("uninstall");
+            params.add(packageName);
+            Process pr = adbCmd.createProcess();
+
             BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             String line;
             while ((line = input.readLine()) != null) {
@@ -119,15 +127,9 @@ public class UninstallAction extends AnAction {
                 showNotification(message, NotificationType.INFORMATION);
             }
         } catch (Exception ex) {
-            throw new UninstallException(ex.getMessage());
+            throw new UninstallException(ex.getMessage(), ex);
         }
 
-    }
-
-    private void showNotification(@NotNull String message, @NotNull NotificationType type) {
-        Notifications.Bus.notify(new Notification(ADB_UNINSTALLER_ID,
-                NOTIFICATION_TITLE, message,
-                type));
     }
 
     /**
@@ -140,20 +142,30 @@ public class UninstallAction extends AnAction {
     private String parseAndroidXmlForPackageName() throws ParseException {
         RunManager runManager = RunManager.getInstance(event.getProject());
         String currentModuleFilePath;
-        ModuleBasedConfiguration selectedConfiguration = (ModuleBasedConfiguration) runManager.getSelectedConfiguration().getConfiguration();
+        RunnerAndConfigurationSettings configurationSettings = runManager.getSelectedConfiguration();
+        if (configurationSettings == null) {
+            Messages.showErrorDialog(event.getProject(), "Run Configuration is not defined", NOTIFICATION_TITLE);
+            throw new ParseException("Run Configuration is not defined");
+        }
+        ModuleBasedConfiguration selectedConfiguration = (ModuleBasedConfiguration) configurationSettings.getConfiguration();
         if (selectedConfiguration != null) {
             Module module = selectedConfiguration.getConfigurationModule().getModule();
             if (module != null) {
                 currentModuleFilePath = module.getModuleFilePath();
             } else {
+                Messages.showErrorDialog(event.getProject(), "Module is not specified for selected Run Configuration", NOTIFICATION_TITLE);
                 throw new ParseException("Module is not specified for selected Run Configuration");
             }
         } else {
-            throw new ParseException("RunConfiguration not found");
+            Messages.showErrorDialog(event.getProject(), "Run Configuration is not defined", NOTIFICATION_TITLE);
+            throw new ParseException("Run Configuration not found");
         }
         try {
-            //TODO find better way to achieve module root path
-            String currentModulePath = currentModuleFilePath.substring(0, currentModuleFilePath.lastIndexOf(File.separator));
+            int index = currentModuleFilePath.lastIndexOf(File.separator);
+            String currentModulePath = ".";
+            if (index != -1) {
+                currentModulePath = currentModuleFilePath.substring(0, index);
+            }
             XMLInputFactory factory = XMLInputFactory.newInstance();
             XMLStreamReader reader;
             try {
@@ -187,11 +199,12 @@ public class UninstallAction extends AnAction {
      */
     private List<Device> getAvailableDevices() {
         List<Device> devices = new ArrayList<Device>();
-        //TODO: should switch to GeneralCommandLine here
-        Runtime rt = Runtime.getRuntime();
         boolean isDeviceEntry = false;
         try {
-            Process pr = rt.exec(toolPath + File.separator + "adb devices");
+            ParametersList params = adbCmd.getParametersList();
+            params.clearAll();
+            params.add("devices");
+            Process pr = adbCmd.createProcess();
             BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             String line;
             while ((line = input.readLine()) != null) {
@@ -221,13 +234,17 @@ public class UninstallAction extends AnAction {
      * @param device {@link Device}
      */
     private void fillDeviceInfo(Device device) {
-        //TODO: should switch to GeneralCommandLine here
-        Runtime rt = Runtime.getRuntime();
         try {
-            Process pr = rt.exec(toolPath + File.separator + "adb -s " + device.getSerialNumber()
-                    + " shell cat /system/build.prop");
-            BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+            ParametersList params = adbCmd.getParametersList();
+            params.clearAll();
+            params.add("-s");
+            params.add(device.getSerialNumber());
+            params.add("shell");
+            params.add("cat");
+            params.add("/system/build.prop");
+            Process pr = adbCmd.createProcess();
 
+            BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
             String line;
             Map<String, String> properties = new HashMap<String, String>();
             while ((line = input.readLine()) != null) {
@@ -262,4 +279,9 @@ public class UninstallAction extends AnAction {
         return device;
     }
 
+    private void showNotification(@NotNull String message, @NotNull NotificationType type) {
+        Notifications.Bus.notify(new Notification(ADB_UNINSTALLER_ID,
+                NOTIFICATION_TITLE, message,
+                type));
+    }
 }

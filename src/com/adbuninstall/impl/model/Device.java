@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.uninstall.impl.model;
+package com.adbuninstall.impl.model;
 
 /**
  * Model class for device representation.
