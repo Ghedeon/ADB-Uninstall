@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-package com.uninstall.impl;
+package com.adbuninstall.impl;
 
 /**
- * Thrown in case of parsing errors.
+ * Thrown in case of uninstalling errors,
  *
  * @author Vitali Vasilioglo <vitali.vasilioglo@gmail.com>
  */
-public class ParseException extends Exception {
+public class UninstallException extends Exception {
 
-    public ParseException() {
+    public UninstallException() {
     }
 
-    public ParseException(String message) {
+    public UninstallException(String message) {
         super(message);
     }
 
-    public ParseException(String message, Throwable cause) {
+    public UninstallException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public ParseException(Throwable cause) {
+    public UninstallException(Throwable cause) {
         super(cause);
     }
 }
