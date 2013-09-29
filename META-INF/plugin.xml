@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>com.redpants.uninstall.plugin.id</id>
     <name>ADB Uninstall</name>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <vendor email="vitali.vasilioglo@gmail.com">Red Pants Company</vendor>
 
     <description>Provides simple visual uninstalling support for the current application.</description>
