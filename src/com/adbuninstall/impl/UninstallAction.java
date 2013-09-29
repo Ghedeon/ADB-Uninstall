@@ -39,7 +39,10 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -79,8 +82,8 @@ public class UninstallAction extends AnAction {
             showNotification("Project SDK is not defined", NotificationType.ERROR);
             return;
         }
-        String toolPath = sdkPath + File.separator + PLATFORM_TOOLS_DIR;
-        adbCmd.setExePath(toolPath + File.separator + "adb");
+        String toolPath = sdkPath + "/" + PLATFORM_TOOLS_DIR;
+        adbCmd.setExePath(toolPath + "/adb");
         List devices = getAvailableDevices();
         DeviceChooserDialog deviceChooser = new DeviceChooserDialog(false);
         deviceChooser.setDeviceList(devices);
@@ -161,7 +164,7 @@ public class UninstallAction extends AnAction {
             throw new ParseException("Run Configuration not found");
         }
         try {
-            int index = currentModuleFilePath.lastIndexOf(File.separator);
+            int index = currentModuleFilePath.lastIndexOf("/");
             String currentModulePath = ".";
             if (index != -1) {
                 currentModulePath = currentModuleFilePath.substring(0, index);
@@ -170,10 +173,10 @@ public class UninstallAction extends AnAction {
             XMLStreamReader reader;
             try {
                 // gradle project
-                reader = factory.createXMLStreamReader(new FileReader(currentModulePath + File.separator + "src" + File.separator + "main" + File.separator + "AndroidManifest.xml"));
+                reader = factory.createXMLStreamReader(new FileReader(currentModulePath + "/src/main/AndroidManifest.xml"));
             } catch (FileNotFoundException ex) {
                 // old style project
-                reader = factory.createXMLStreamReader(new FileReader(currentModulePath + File.separator + "AndroidManifest.xml"));
+                reader = factory.createXMLStreamReader(new FileReader(currentModulePath + "/AndroidManifest.xml"));
             }
 
             while (reader.hasNext()) {
