@@ -151,7 +151,7 @@ public class UninstallAction extends AnAction {
         if (selectedConfiguration != null) {
             Module module = selectedConfiguration.getConfigurationModule().getModule();
             if (module != null) {
-                currentModuleFilePath = module.getModuleFilePath();
+                currentModuleFilePath = module.getModuleFilePath().replaceAll("/", "\\\\");
             } else {
                 Messages.showErrorDialog(event.getProject(), "Module is not specified for selected Run Configuration", NOTIFICATION_TITLE);
                 throw new ParseException("Module is not specified for selected Run Configuration");
