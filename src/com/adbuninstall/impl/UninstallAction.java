@@ -33,6 +33,7 @@ import com.intellij.openapi.projectRoots.Sdk;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
+import org.apache.velocity.anakia.Escape;
 import org.jetbrains.annotations.NotNull;
 
 import javax.xml.stream.XMLInputFactory;
@@ -151,7 +152,7 @@ public class UninstallAction extends AnAction {
         if (selectedConfiguration != null) {
             Module module = selectedConfiguration.getConfigurationModule().getModule();
             if (module != null) {
-                currentModuleFilePath = module.getModuleFilePath();
+                currentModuleFilePath = module.getModuleFilePath().replaceAll("/", escape(File.separator));
             } else {
                 Messages.showErrorDialog(event.getProject(), "Module is not specified for selected Run Configuration", NOTIFICATION_TITLE);
                 throw new ParseException("Module is not specified for selected Run Configuration");
@@ -284,4 +285,19 @@ public class UninstallAction extends AnAction {
                 NOTIFICATION_TITLE, message,
                 type));
     }
+
+	private String escape(String src) {
+		StringBuilder builder = new StringBuilder();
+		final char[] chars = src.toCharArray();
+		for (char c : chars) {
+			switch (c) {
+				case 92: // '\'
+					builder.append("\\\\");
+					break;
+				default:
+					builder.append(c);
+			}
+		}
+		return builder.toString();
+	}
 }
