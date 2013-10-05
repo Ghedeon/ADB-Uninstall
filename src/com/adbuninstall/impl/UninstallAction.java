@@ -16,37 +16,30 @@
 
 package com.adbuninstall.impl;
 
-import com.adbuninstall.impl.model.Device;
 import com.adbuninstall.impl.presentation.DeviceChooserDialog;
+import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.IDevice;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
-import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.ModuleBasedConfiguration;
-import com.intellij.execution.configurations.ParametersList;
 import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.module.Module;
-import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.roots.ProjectRootManager;
-import com.intellij.openapi.ui.DialogWrapper;
-import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
+import org.jetbrains.android.facet.AndroidFacet;
+import org.jetbrains.android.sdk.AndroidSdkUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
+import javax.swing.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Main Action which is triggered on ADB Uninstall clicked.
@@ -58,77 +51,96 @@ public class UninstallAction extends AnAction {
     /**
      * used for EventLog messages
      */
-    public static final String ADB_UNINSTALLER_ID = "ADB Uninstall";
-    public static final String NOTIFICATION_TITLE = ADB_UNINSTALLER_ID;
-    public static final String PLATFORM_TOOLS_DIR = "platform-tools";
-    private static final String MANUFACTURER = "ro.product.manufacturer";
-    private static final String MODEL = "ro.product.model";
-    private static final String RELEASE_VERSION = "ro.build.version.release";
-    private static final String API_VERSION = "ro.build.version.sdk";
-    private AnActionEvent event;
-    private GeneralCommandLine adbCmd = new GeneralCommandLine();
+    public static final String ADB_UNINSTALL_ID = "ADB Uninstall";
+    public static final String NOTIFICATION_TITLE = ADB_UNINSTALL_ID;
+
+    private Project project;
 
     /**
      * {@inheritDoc}
      */
     @Override
     public void actionPerformed(AnActionEvent event) {
-        this.event = event;
-        String sdkPath;
-        Sdk projectSdk = ProjectRootManager.getInstance(event.getProject()).getProjectSdk();
-        if (projectSdk != null) {
-            sdkPath = projectSdk.getHomePath();
-        } else {
-            showNotification("Project SDK is not defined", NotificationType.ERROR);
-            return;
-        }
-        String toolPath = sdkPath + "/" + PLATFORM_TOOLS_DIR;
-        adbCmd.setExePath(toolPath + "/adb");
-        List devices = getAvailableDevices();
-        DeviceChooserDialog deviceChooser = new DeviceChooserDialog(false);
-        deviceChooser.setDeviceList(devices);
-        deviceChooser.show();
-        int exitCode = deviceChooser.getExitCode();
-        if (exitCode == DialogWrapper.OK_EXIT_CODE) {
-            try {
-                List<Device> selectedDevices = deviceChooser.getSelectedDevices();
-                if (selectedDevices.size() > 0) {
-                    String packageName = parseAndroidXmlForPackageName();
-                    for (Device device : selectedDevices) {
-                        uninstallFromDevice(device, packageName);
+        project = event.getProject();
+        Notifications.Bus.register(ADB_UNINSTALL_ID, NotificationDisplayType.BALLOON);
+
+        final DeviceChooserDialog deviceChooser = new DeviceChooserDialog(false);
+
+        AndroidDebugBridge.addDeviceChangeListener(new AndroidDebugBridge.IDeviceChangeListener() {
+            @Override
+            public void deviceConnected(final IDevice iDevice) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        deviceChooser.addDevice(iDevice);
                     }
-                }
-            } catch (Exception ex) {
-                showNotification(ex.getMessage(), NotificationType.ERROR);
-                ex.printStackTrace();
+                });
+            }
+
+            @Override
+            public void deviceDisconnected(final IDevice iDevice) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        deviceChooser.removeDevice(iDevice);
+                    }
+                });
+            }
+
+            @Override
+            public void deviceChanged(IDevice iDevice, int i) {
+            }
+        });
+        AndroidDebugBridge adb = AndroidSdkUtils.getDebugBridge(project);
+        deviceChooser.addDevices(adb.getDevices());
+        deviceChooser.show();
+        if (deviceChooser.isOK()) {
+            final List<IDevice> selectedDevices = deviceChooser.getSelectedDevices();
+            if (selectedDevices.size() > 0) {
+                ProgressManager.getInstance().run(new Task.Backgroundable(project, ADB_UNINSTALL_ID) {
+                    @Override
+                    public void run(@NotNull ProgressIndicator progressIndicator) {
+                        uninstallFromDevices(selectedDevices, progressIndicator);
+                    }
+                });
             }
         }
     }
 
     /**
-     * Performs <code>"adb uninstall"</code> command for given device
+     * Performs device shell <code>"pm uninstall"</code> command on the given device.
      *
-     * @param device      {@link com.adbuninstall.impl.model.Device} object
-     * @param packageName name of the package should be uninstalled
-     * @throws XMLStreamException
-     * @throws FileNotFoundException
+     * @param devices           list of {@link IDevice} objects
+     * @param progressIndicator {@link ProgressIndicator} for the process command executed in.
      */
-    private void uninstallFromDevice(Device device, String packageName) throws UninstallException {
-        try {
-            ParametersList params = adbCmd.getParametersList();
-            params.clearAll();
-            params.add("-s");
-            params.add(device.getSerialNumber());
-            params.add("uninstall");
-            params.add(packageName);
-            Process pr = adbCmd.createProcess();
-
-            BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-            String line;
-            while ((line = input.readLine()) != null) {
-                String message = "Uninstalling " + packageName + " from " + device.getName() + ": " + line;
-                showNotification(message, NotificationType.INFORMATION);
+    private void uninstallFromDevices(List<IDevice> devices, ProgressIndicator progressIndicator) {
+        Module runningModule = getModule();
+        if (runningModule == null) {
+            return;
+        }
+        String packageName = AndroidFacet.getInstance(runningModule).getManifest().getPackage().getStringValue();
+        for (IDevice device : devices) {
+            try {
+                progressIndicator.setText("Uninstalling " + packageName + " from " + DeviceUtils.getDeviceDisplayName(device));
+                uninstallFromDevice(device, packageName);
+            } catch (UninstallException ex) {
+                showNotification(ex.getMessage(), NotificationType.ERROR);
             }
+        }
+    }
+
+    /**
+     * Performs device shell <code>"pm uninstall"</code> command for the given device.
+     *
+     * @param device      {@link IDevice} object
+     * @param packageName name of the package which should be uninstalled
+     * @throws UninstallException in case of errors
+     */
+    private void uninstallFromDevice(IDevice device, String packageName) throws UninstallException {
+        try {
+            //TODO: find more appropriate user notification message
+            device.uninstallPackage(packageName);
+            showNotification("Application uninstalled successfully", NotificationType.INFORMATION);
         } catch (Exception ex) {
             throw new UninstallException(ex.getMessage(), ex);
         }
@@ -136,154 +148,35 @@ public class UninstallAction extends AnAction {
     }
 
     /**
-     * Parses AndroidManifest.xml for package name.
+     * Returns the active module from the selected Run Configuration.
      *
-     * @return project's package name
-     * @throws XMLStreamException
-     * @throws FileNotFoundException
+     * @return {@link Module}
      */
-    private String parseAndroidXmlForPackageName() throws ParseException {
-        RunManager runManager = RunManager.getInstance(event.getProject());
-        String currentModuleFilePath;
+    @Nullable
+    private Module getModule() {
+        RunManager runManager = RunManager.getInstance(project);
         RunnerAndConfigurationSettings configurationSettings = runManager.getSelectedConfiguration();
         if (configurationSettings == null) {
-            Messages.showErrorDialog(event.getProject(), "Run Configuration is not defined", NOTIFICATION_TITLE);
-            throw new ParseException("Run Configuration is not defined");
+            showNotification("Run Configuration is not defined", NotificationType.ERROR);
+            return null;
         }
         ModuleBasedConfiguration selectedConfiguration = (ModuleBasedConfiguration) configurationSettings.getConfiguration();
-        if (selectedConfiguration != null) {
-            Module module = selectedConfiguration.getConfigurationModule().getModule();
-            if (module != null) {
-                currentModuleFilePath = module.getModuleFilePath();
-            } else {
-                Messages.showErrorDialog(event.getProject(), "Module is not specified for selected Run Configuration", NOTIFICATION_TITLE);
-                throw new ParseException("Module is not specified for selected Run Configuration");
-            }
-        } else {
-            Messages.showErrorDialog(event.getProject(), "Run Configuration is not defined", NOTIFICATION_TITLE);
-            throw new ParseException("Run Configuration not found");
-        }
-        try {
-            int index = currentModuleFilePath.lastIndexOf("/");
-            String currentModulePath = ".";
-            if (index != -1) {
-                currentModulePath = currentModuleFilePath.substring(0, index);
-            }
-            XMLInputFactory factory = XMLInputFactory.newInstance();
-            XMLStreamReader reader;
-            try {
-                // gradle project
-                reader = factory.createXMLStreamReader(new FileReader(currentModulePath + "/src/main/AndroidManifest.xml"));
-            } catch (FileNotFoundException ex) {
-                // old style project
-                reader = factory.createXMLStreamReader(new FileReader(currentModulePath + "/AndroidManifest.xml"));
-            }
-
-            while (reader.hasNext()) {
-                int event = reader.next();
-                switch (event) {
-                    case XMLStreamConstants.START_ELEMENT:
-                        if ("manifest".equals(reader.getLocalName())) {
-                            return reader.getAttributeValue(null, "package");
-                        }
-                }
-            }
-        } catch (Exception ex) {
-            throw new ParseException(ex.getMessage());
+        Module module = selectedConfiguration.getConfigurationModule().getModule();
+        if (module == null) {
+            showNotification("Module is not specified for selected Run Configuration", NotificationType.ERROR);
         }
 
-        throw new ParseException("Package not found");
+        return module;
     }
 
     /**
-     * Performs <code>"adb devices"</code> command
+     * Used for user notifications.
      *
-     * @return List of available devices
+     * @param message notification's message
+     * @param type    one of the {@link NotificationType}
      */
-    private List<Device> getAvailableDevices() {
-        List<Device> devices = new ArrayList<Device>();
-        boolean isDeviceEntry = false;
-        try {
-            ParametersList params = adbCmd.getParametersList();
-            params.clearAll();
-            params.add("devices");
-            Process pr = adbCmd.createProcess();
-            BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-            String line;
-            while ((line = input.readLine()) != null) {
-                if (line.toLowerCase().contains("list of devices")) {
-                    isDeviceEntry = true;
-                    continue;
-                }
-                if (isDeviceEntry) {
-                    System.out.println(line);
-                    if (!line.isEmpty()) {
-                        Device device = parseDevice(line);
-                        fillDeviceInfo(device);
-                        devices.add(device);
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            showNotification(ex.getMessage(), NotificationType.ERROR);
-            ex.printStackTrace();
-        }
-        return devices;
-    }
-
-    /**
-     * Obtains additional device's info
-     *
-     * @param device {@link Device}
-     */
-    private void fillDeviceInfo(Device device) {
-        try {
-            ParametersList params = adbCmd.getParametersList();
-            params.clearAll();
-            params.add("-s");
-            params.add(device.getSerialNumber());
-            params.add("shell");
-            params.add("cat");
-            params.add("/system/build.prop");
-            Process pr = adbCmd.createProcess();
-
-            BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-            String line;
-            Map<String, String> properties = new HashMap<String, String>();
-            while ((line = input.readLine()) != null) {
-                if (line.contains("=")) {
-                    String[] split = line.split("=");
-                    if (split.length == 2) {
-                        properties.put(split[0], split[1]);
-                    }
-                }
-            }
-            device.setManufacturer(properties.get(MANUFACTURER));
-            device.setModel(properties.get(MODEL));
-            device.setReleaseVersion(properties.get(RELEASE_VERSION));
-            device.setApiVersion(properties.get(API_VERSION));
-        } catch (Exception ex) {
-            showNotification(ex.getMessage(), NotificationType.ERROR);
-            ex.printStackTrace();
-        }
-    }
-
-    /**
-     * Parses <code>"adb devices"</code> command output for device serial number and status
-     *
-     * @param line given line of output
-     * @return {@Device} object
-     */
-    private Device parseDevice(String line) {
-        Device device = new Device();
-        String[] split = line.split("\t");
-        device.setSerialNumber(split[0]);
-        device.setState(split[1]);
-        return device;
-    }
-
     private void showNotification(@NotNull String message, @NotNull NotificationType type) {
-        Notifications.Bus.notify(new Notification(ADB_UNINSTALLER_ID,
+        Notifications.Bus.notify(new Notification(ADB_UNINSTALL_ID,
                 NOTIFICATION_TITLE, message,
                 type));
     }

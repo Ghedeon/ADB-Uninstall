@@ -16,7 +16,8 @@
 
 package com.adbuninstall.impl.presentation;
 
-import com.adbuninstall.impl.model.Device;
+import com.adbuninstall.impl.DeviceUtils;
+import com.android.ddmlib.IDevice;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +41,7 @@ public class DeviceChooserDialog extends DialogWrapper implements ItemListener {
     private JPanel contentPane;
     private JTable jTable;
     private JCheckBox allCheckbox;
-    private List<Device> devices = new ArrayList<Device>();
+    private DevicesTableModel tableModel;
 
     public DeviceChooserDialog(@Nullable Project project, boolean canBeParent) {
         super(project, canBeParent);
@@ -66,20 +67,10 @@ public class DeviceChooserDialog extends DialogWrapper implements ItemListener {
         init();
         setModal(true);
         setTitle("Choose device");
-        jTable.setRowHeight(22);
         allCheckbox.setEnabled(false);
-    }
-
-    public void setDeviceList(List<Device> devices) {
-        this.devices.clear();
-        if (devices != null) {
-            this.devices.addAll(devices);
-        }
-        jTable.setModel(new DevicesTableModel(devices));
-        if (devices.size() > 0) {
-            jTable.setRowSelectionInterval(0, 0);
-            allCheckbox.setEnabled(true);
-        }
+        jTable.setRowHeight(22);
+        tableModel = new DevicesTableModel();
+        jTable.setModel(tableModel);
     }
 
     @Nullable
@@ -89,13 +80,13 @@ public class DeviceChooserDialog extends DialogWrapper implements ItemListener {
         return contentPane;
     }
 
-    public List<Device> getSelectedDevices() {
+    public List<IDevice> getSelectedDevices() {
         if (allCheckbox.isSelected()) {
-            return devices;
+            return tableModel.devices;
         }
-        List<Device> selectedDevices = new ArrayList<Device>();
+        List<IDevice> selectedDevices = new ArrayList<IDevice>();
         for (int row : jTable.getSelectedRows()) {
-            selectedDevices.add(devices.get(row));
+            selectedDevices.add(tableModel.devices.get(row));
         }
         return selectedDevices;
     }
@@ -109,13 +100,45 @@ public class DeviceChooserDialog extends DialogWrapper implements ItemListener {
         }
     }
 
+    public void addDevice(@NotNull IDevice device) {
+        tableModel.addDevice(device);
+        updateSelectionIfNeeded();
+    }
+
+    public void removeDevice(@NotNull IDevice device) {
+        tableModel.removeDevice(device);
+        if (tableModel.devices.size() == 0) { // last device removed
+            allCheckbox.setEnabled(false);
+        }
+    }
+
+    public void addDevices(IDevice[] devices) {
+        if (devices.length != 0) {
+            tableModel.addDevices(devices);
+            updateSelectionIfNeeded();
+        }
+    }
+
+    private void updateSelectionIfNeeded() {
+        if (jTable.getSelectedRow() == -1) {
+            allCheckbox.setEnabled(true);
+            jTable.setRowSelectionInterval(0, 0);
+        }
+    }
+
     private class DevicesTableModel extends AbstractTableModel {
 
         private final String[] cols = {"Device", "Serial Number", "State"};
-        private List<Device> devices;
+        private List<IDevice> devices = new ArrayList<IDevice>();
 
-        private DevicesTableModel(List<Device> devices) {
-            this.devices = devices;
+        public void addDevice(@NotNull IDevice device) {
+            devices.add(device);
+            fireTableDataChanged();
+        }
+
+        public void removeDevice(@NotNull IDevice device) {
+            devices.remove(device);
+            fireTableDataChanged();
         }
 
         @Override
@@ -137,7 +160,7 @@ public class DeviceChooserDialog extends DialogWrapper implements ItemListener {
         public Object getValueAt(int rowIndex, int columnIndex) {
             switch (columnIndex) {
                 case 0:
-                    return devices.get(rowIndex).getName();
+                    return DeviceUtils.getDeviceDisplayName(devices.get(rowIndex));
                 case 1:
                     return devices.get(rowIndex).getSerialNumber();
                 case 2:
@@ -146,5 +169,19 @@ public class DeviceChooserDialog extends DialogWrapper implements ItemListener {
             //shouldn't happen
             return null;
         }
+
+        public void addDevices(IDevice[] devices) {
+            boolean needRefresh = false;
+            for (IDevice device : devices) {
+                if (!this.devices.contains(device)) {
+                    this.devices.add(device);
+                    needRefresh = true;
+                }
+            }
+            if (needRefresh) {
+                fireTableDataChanged();
+            }
+        }
     }
+
 }
