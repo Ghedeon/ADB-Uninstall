@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package com.adbuninstall.impl;
+package com.vv.adbuninstall;
 
-import com.adbuninstall.impl.presentation.DeviceChooserDialog;
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import com.intellij.execution.RunManager;
@@ -33,6 +32,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
+import com.vv.adbuninstall.presentation.DeviceChooserDialog;
 import org.jetbrains.android.facet.AndroidFacet;
 import org.jetbrains.android.sdk.AndroidSdkUtils;
 import org.jetbrains.annotations.NotNull;
@@ -53,7 +53,6 @@ public class UninstallAction extends AnAction {
      */
     public static final String ADB_UNINSTALL_ID = "ADB Uninstall";
     public static final String NOTIFICATION_TITLE = ADB_UNINSTALL_ID;
-
     private Project project;
 
     /**
@@ -63,34 +62,8 @@ public class UninstallAction extends AnAction {
     public void actionPerformed(AnActionEvent event) {
         project = event.getProject();
         Notifications.Bus.register(ADB_UNINSTALL_ID, NotificationDisplayType.BALLOON);
-
         final DeviceChooserDialog deviceChooser = new DeviceChooserDialog(false);
-
-        AndroidDebugBridge.addDeviceChangeListener(new AndroidDebugBridge.IDeviceChangeListener() {
-            @Override
-            public void deviceConnected(final IDevice iDevice) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        deviceChooser.addDevice(iDevice);
-                    }
-                });
-            }
-
-            @Override
-            public void deviceDisconnected(final IDevice iDevice) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        deviceChooser.removeDevice(iDevice);
-                    }
-                });
-            }
-
-            @Override
-            public void deviceChanged(IDevice iDevice, int i) {
-            }
-        });
+        AndroidDebugBridge.addDeviceChangeListener(new DeviceChangeListener(deviceChooser));
         AndroidDebugBridge adb = AndroidSdkUtils.getDebugBridge(project);
         deviceChooser.addDevices(adb.getDevices());
         deviceChooser.show();
@@ -125,6 +98,7 @@ public class UninstallAction extends AnAction {
                 uninstallFromDevice(device, packageName);
             } catch (UninstallException ex) {
                 showNotification(ex.getMessage(), NotificationType.ERROR);
+                ex.printStackTrace();
             }
         }
     }
@@ -140,7 +114,7 @@ public class UninstallAction extends AnAction {
         try {
             //TODO: find more appropriate user notification message
             device.uninstallPackage(packageName);
-            showNotification("Application uninstalled successfully", NotificationType.INFORMATION);
+            showNotification("Application successfully uninstalled from " + DeviceUtils.getDeviceDisplayName(device), NotificationType.INFORMATION);
         } catch (Exception ex) {
             throw new UninstallException(ex.getMessage(), ex);
         }
@@ -180,4 +154,40 @@ public class UninstallAction extends AnAction {
                 NOTIFICATION_TITLE, message,
                 type));
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    private class DeviceChangeListener implements AndroidDebugBridge.IDeviceChangeListener {
+        private DeviceChooserDialog deviceChooser;
+
+        private DeviceChangeListener(DeviceChooserDialog deviceChooser) {
+            this.deviceChooser = deviceChooser;
+        }
+
+        @Override
+        public void deviceConnected(final IDevice iDevice) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    deviceChooser.addDevice(iDevice);
+                }
+            });
+        }
+
+        @Override
+        public void deviceDisconnected(final IDevice iDevice) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    deviceChooser.removeDevice(iDevice);
+                }
+            });
+        }
+
+        @Override
+        public void deviceChanged(IDevice iDevice, int i) {
+        }
+    }
 }
+

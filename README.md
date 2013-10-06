@@ -15,7 +15,7 @@ Android Studio/Intellij IDEA plugin which provides simple visual uninstalling su
    
 ## Note
 If, for some reason, this plugin doesn't work for you and you want to help me fix it.<br>
-Please, run you IDE from the command line, try to reproduce the bug and send me all exceptions from the command line output related to com.adbuninstall package.<br> 
+Please, run you IDE from the command line, try to reproduce the bug and send me all exceptions from the command line output related to com.vv.adbuninstall package.<br>
 Thank you.
 
 ## License

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.adbuninstall.impl;
+package com.vv.adbuninstall;
 
 /**
  * Thrown in case of uninstalling errors,

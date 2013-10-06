@@ -1,14 +1,14 @@
 <idea-plugin version="2">
-    <id>com.redpants.uninstall.plugin.id</id>
+    <id>com.vv.adbuninstall</id>
     <name>ADB Uninstall</name>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <vendor email="asfalit@gmail.com">Ghedeon</vendor>
 
     <description>Provides simple visual uninstalling support for the current application.</description>
 
     <change-notes>
         <![CDATA[
-            Completely code base changed. Switched to using android's plugin native utilities.
+            Completely new code base. Switched to native utilities from the android plugin.
         ]]>
     </change-notes>
 
@@ -28,7 +28,7 @@
     </project-components>
 
     <actions>
-        <action id="ADB Uninstall" class="com.adbuninstall.impl.UninstallAction" text="ADB uninstall" description="Uninstalls application"
+        <action id="ADB Uninstall" class="com.vv.adbuninstall.UninstallAction" text="ADB uninstall" description="Uninstalls the current project's application"
                 icon="/icons/icon.png">
             <add-to-group group-id="AndroidToolsGroup"/>
             <add-to-group group-id="ToolbarRunGroup" anchor="after" relative-to-action="RunnerActions"/>
