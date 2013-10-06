@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5ea4272c-2db2-47a6-b821-23e888aac352" name="Default" comment="">
+    <list default="true" id="5ea4272c-2db2-47a6-b821-23e888aac352" name="Default" comment="&#10;Latest build updated.">
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/adbuninstall/impl/DeviceUtils.java" afterPath="$PROJECT_DIR$/src/com/vv/adbuninstall/DeviceUtils.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/adbuninstall/impl/UninstallAction.java" afterPath="$PROJECT_DIR$/src/com/vv/adbuninstall/UninstallAction.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/adbuninstall/impl/UninstallException.java" afterPath="$PROJECT_DIR$/src/com/vv/adbuninstall/UninstallException.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/adbuninstall/impl/presentation/DeviceChooserDialog.form" afterPath="$PROJECT_DIR$/src/com/vv/adbuninstall/presentation/DeviceChooserDialog.form" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/adbuninstall/impl/presentation/DeviceChooserDialog.java" afterPath="$PROJECT_DIR$/src/com/vv/adbuninstall/presentation/DeviceChooserDialog.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ADB Uninstall.jar" afterPath="$PROJECT_DIR$/ADB Uninstall.jar" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/META-INF/plugin.xml" afterPath="$PROJECT_DIR$/META-INF/plugin.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Plugin.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="5ea4272c-2db2-47a6-b821-23e888aac352" time="1381007435384" ignored="false" />
-    <file path="/fragment.java" changelist="5ea4272c-2db2-47a6-b821-23e888aac352" time="1380991459069" ignored="false" />
-    <file path="/UninstallAction.java" changelist="5ea4272c-2db2-47a6-b821-23e888aac352" time="1381007071487" ignored="false" />
+    <file path="/Dummy.txt" changelist="5ea4272c-2db2-47a6-b821-23e888aac352" time="1381073209050" ignored="false" />
+    <file path="/fragment.java" changelist="5ea4272c-2db2-47a6-b821-23e888aac352" time="1381072165320" ignored="false" />
+    <file path="/UninstallAction.java" changelist="5ea4272c-2db2-47a6-b821-23e888aac352" time="1381072917846" ignored="false" />
     <file path="$PROJECT_DIR$/src/com/adbuninstall/impl/DummyAction.java" changelist="5ea4272c-2db2-47a6-b821-23e888aac352" time="1380624948345" ignored="false" />
     <file path="$USER_HOME$/workspace/EBAY/Moda2 (copy)/Moda2.0/eBayFashion/res/layout/main.xml" changelist="5ea4272c-2db2-47a6-b821-23e888aac352" time="1380635717537" ignored="false" />
     <file path="$USER_HOME$/workspace/EBAY/Moda2 (copy)/Moda2.0/eBayFashion/res/values/strings.xml" changelist="5ea4272c-2db2-47a6-b821-23e888aac352" time="1380628263746" ignored="false" />
@@ -24,7 +31,7 @@
     <file path="$PROJECT_DIR$/../ideaIC-129 (copy).354/plugins/android/src/org/jetbrains/android/compiler/AndroidCompileUtil.java" changelist="5ea4272c-2db2-47a6-b821-23e888aac352" time="1380742514145" ignored="false" />
     <file path="/AndroidCompileUtil.java" changelist="5ea4272c-2db2-47a6-b821-23e888aac352" time="1380742511189" ignored="false" />
     <file path="/DeviceUtils.java" changelist="5ea4272c-2db2-47a6-b821-23e888aac352" time="1380993324443" ignored="false" />
-    <file path="/plugin.xml" changelist="5ea4272c-2db2-47a6-b821-23e888aac352" time="1381006662761" ignored="false" />
+    <file path="/plugin.xml" changelist="5ea4272c-2db2-47a6-b821-23e888aac352" time="1381072060076" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,19 +93,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="UninstallAction.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/com/adbuninstall/impl/UninstallAction.java">
+      <file leaf-file-name="UninstallAction.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/vv/adbuninstall/UninstallAction.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="94" column="33" selection-start="3442" selection-end="3442" vertical-scroll-proportion="0.37597913">
+            <state line="116" column="115" selection-start="4896" selection-end="4896" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="plugin.xml" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="plugin.xml" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/META-INF/plugin.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="10" column="40" selection-start="390" selection-end="390" vertical-scroll-proportion="0.0">
+            <state line="3" column="18" selection-start="108" selection-end="108" vertical-scroll-proportion="0.1171875">
               <folding />
             </state>
           </provider>
@@ -114,9 +121,9 @@
         </entry>
       </file>
       <file leaf-file-name="DeviceChooserDialog.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/com/adbuninstall/impl/presentation/DeviceChooserDialog.java">
+        <entry file="file://$PROJECT_DIR$/src/com/vv/adbuninstall/presentation/DeviceChooserDialog.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="68" column="17" selection-start="2074" selection-end="2074" vertical-scroll-proportion="0.0">
+            <state line="68" column="17" selection-start="2070" selection-end="2070" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -143,8 +150,9 @@
         <option value="$PROJECT_DIR$/ADB Uninstall.iml" />
         <option value="$PROJECT_DIR$/src/com/adbuninstall/impl/DeviceUtils.java" />
         <option value="$PROJECT_DIR$/src/com/adbuninstall/impl/presentation/DeviceChooserDialog.java" />
-        <option value="$PROJECT_DIR$/META-INF/plugin.xml" />
         <option value="$PROJECT_DIR$/src/com/adbuninstall/impl/UninstallAction.java" />
+        <option value="$PROJECT_DIR$/src/com/adbuninstall/UninstallAction.java" />
+        <option value="$PROJECT_DIR$/META-INF/plugin.xml" />
       </list>
     </option>
   </component>
@@ -173,7 +181,7 @@
       <showMembers />
       <showModules />
       <showLibraryContents />
-      <hideEmptyPackages />
+      <hideEmptyPackages PackagesPane="false" ProjectPane="false" />
       <abbreviatePackageNames />
       <autoscrollToSource />
       <autoscrollFromSource />
@@ -212,29 +220,15 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="impl" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Plugin" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ADB Uninstall" />
+              <option name="myItemId" value="com" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
+              <option name="myItemId" value="vv" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="impl" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="presentation" />
+              <option name="myItemId" value="adbuninstall" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -254,8 +248,30 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
+      <pane id="Scope">
+        <subPane subId="Project Files">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="ADB Uninstall">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="PackagesPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Plugin" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -275,13 +291,17 @@
     <property name="restartRequiresConfirmation" value="true" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="options.searchVisible" value="true" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="dynamic.classpath" value="false" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/lib" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/com/adbuninstall/presentation" />
+      <recent name="$PROJECT_DIR$/src/com/adbuninstall" />
     </key>
   </component>
   <component name="RunManager" selected="Plugin.Unnamed">
@@ -408,18 +428,24 @@
       <created>1381007446482</created>
       <updated>1381007446482</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Latest build updated.">
+      <created>1381007789342</created>
+      <updated>1381007789342</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="-1" y="27" width="1602" height="874" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
-      <window_info id="Changes" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.43663913" sideWeight="0.498713" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="81" y="152" width="1519" height="748" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4352617" sideWeight="0.498713" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292011" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29338843" sideWeight="0.73745173" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.43663913" sideWeight="0.501287" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4352617" sideWeight="0.501287" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="ASM" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -430,13 +456,11 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21621622" sideWeight="0.56336087" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21621622" sideWeight="0.5647383" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24380165" sideWeight="0.498713" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Documentation" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="FLOATING" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="81" y="152" width="1519" height="748" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3292011" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -484,7 +508,7 @@
     <option name="WRAP_WHEN_TYPING_REACHES_RIGHT_MARGIN" value="false" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Switched to new codebase. Native android plugin utilities are used from now.&#10;Bug with freezing IDE fixed." />
+    <option name="LAST_COMMIT_MESSAGE" value="Latest build updated." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="false" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -499,12 +523,13 @@
     <option name="SHOW_FILE_HISTORY_AS_TREE" value="false" />
     <option name="FILE_HISTORY_SPLITTER_PROPORTION" value="0.6" />
     <MESSAGE value="Switched to new codebase. Native android plugin utilities are used from now.&#10;Bug with freezing IDE fixed." />
+    <MESSAGE value="Latest build updated." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/adbuninstall/impl/UninstallAction.java">
+    <entry file="file://$PROJECT_DIR$/src/com/vv/adbuninstall/UninstallAction.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="85" column="86" selection-start="3454" selection-end="3454" vertical-scroll-proportion="0.0">
           <folding />
@@ -516,7 +541,7 @@
         <state line="15" column="31" selection-start="724" selection-end="724" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/adbuninstall/impl/UninstallAction.java">
+    <entry file="file://$PROJECT_DIR$/src/com/vv/adbuninstall/UninstallAction.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="108" column="70" selection-start="4340" selection-end="4340" vertical-scroll-proportion="0.0">
           <folding />
@@ -533,7 +558,7 @@
         <state line="15" column="31" selection-start="724" selection-end="724" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/adbuninstall/impl/UninstallAction.java">
+    <entry file="file://$PROJECT_DIR$/src/com/vv/adbuninstall/UninstallAction.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="82" column="108" selection-start="3230" selection-end="3230" vertical-scroll-proportion="0.0">
           <folding />
@@ -560,26 +585,33 @@
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/adbuninstall/impl/DeviceUtils.java">
+    <entry file="file://$PROJECT_DIR$/src/com/vv/adbuninstall/DeviceUtils.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="22" column="47" selection-start="768" selection-end="768" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="e#0#2593#0" expanded="true" />
+            <element signature="e#0#2591#0" expanded="true" />
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/adbuninstall/impl/UninstallException.java">
+    <entry file="file://$PROJECT_DIR$/src/com/vv/adbuninstall/UninstallException.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="23" column="13" selection-start="764" selection-end="764" vertical-scroll-proportion="0.2591171">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/META-INF/plugin.xml">
+    <entry file="file://$PROJECT_DIR$/src/com/vv/adbuninstall/presentation/DeviceChooserDialog.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="40" selection-start="390" selection-end="390" vertical-scroll-proportion="0.0">
+        <state line="68" column="17" selection-start="2070" selection-end="2070" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/vv/adbuninstall/UninstallAction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="116" column="115" selection-start="4896" selection-end="4896" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -591,16 +623,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/adbuninstall/impl/presentation/DeviceChooserDialog.java">
+    <entry file="file://$PROJECT_DIR$/META-INF/plugin.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="68" column="17" selection-start="2074" selection-end="2074" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/adbuninstall/impl/UninstallAction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="94" column="33" selection-start="3442" selection-end="3442" vertical-scroll-proportion="0.37597913">
+        <state line="3" column="18" selection-start="108" selection-end="108" vertical-scroll-proportion="0.1171875">
           <folding />
         </state>
       </provider>

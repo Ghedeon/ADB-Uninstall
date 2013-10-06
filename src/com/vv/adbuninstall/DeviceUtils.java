@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.adbuninstall.impl;
+package com.vv.adbuninstall;
 
 import com.android.ddmlib.IDevice;
 import org.jetbrains.annotations.NotNull;

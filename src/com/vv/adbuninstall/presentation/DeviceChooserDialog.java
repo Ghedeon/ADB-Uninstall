@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.adbuninstall.impl.presentation;
+package com.vv.adbuninstall.presentation;
 
-import com.adbuninstall.impl.DeviceUtils;
 import com.android.ddmlib.IDevice;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
+import com.vv.adbuninstall.DeviceUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
