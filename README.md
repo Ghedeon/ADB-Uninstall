@@ -8,11 +8,11 @@ ADB-Uninstall
 Android Studio/Intellij IDEA plugin which provides simple visual uninstalling support for android applications.
 
 ## Installation
+   Plugin is available for installation from official [JetBrains plugin repository](http://plugins.jetbrains.com/plugin/7326?pr=androidstudio).
+   
+   Or, from binary file:
    Settings → Plugins → Install plugin from disk…
 
-## Comming soon
-   Will be available to install from the official JetBrains plugin repository.
-   
 ## Note
 If, for some reason, this plugin doesn't work for you and you want to help me fix it.<br>
 Please, run you IDE from the command line, try to reproduce the bug and send me all exceptions from the command line output related to com.vv.adbuninstall package.<br>
