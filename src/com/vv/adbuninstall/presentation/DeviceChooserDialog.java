@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Device Chooser dialog which allows to select on of the attached devices or all of them.
  *
- * @author Vitali Vasilioglo <vitali.vasilioglo@gmail.com>
+ * @author Ghedeon <asfalit@gmail.com>
  */
 public class DeviceChooserDialog extends DialogWrapper implements ItemListener {
 

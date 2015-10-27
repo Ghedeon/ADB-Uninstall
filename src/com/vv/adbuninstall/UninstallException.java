@@ -19,7 +19,7 @@ package com.vv.adbuninstall;
 /**
  * Thrown in case of uninstalling errors,
  *
- * @author Vitali Vasilioglo <vitali.vasilioglo@gmail.com>
+ * @author Ghedeon <asfalit@gmail.com>
  */
 public class UninstallException extends Exception {
 
