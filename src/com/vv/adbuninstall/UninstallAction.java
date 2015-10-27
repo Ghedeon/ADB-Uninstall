@@ -22,11 +22,11 @@ import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.ModuleBasedConfiguration;
 import com.intellij.notification.Notification;
-import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
@@ -39,6 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.util.List;
 
 /**
@@ -53,18 +54,18 @@ public class UninstallAction extends AnAction {
      */
     public static final String ADB_UNINSTALL_ID = "ADB Uninstall";
     public static final String NOTIFICATION_TITLE = ADB_UNINSTALL_ID;
+    public static final int NOTIFICATION_EXPIRE_DELAY = 3000;
     private Project project;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void actionPerformed(AnActionEvent event) {
+    public void actionPerformed(final AnActionEvent event) {
         project = event.getProject();
-        Notifications.Bus.register(ADB_UNINSTALL_ID, NotificationDisplayType.BALLOON);
         final DeviceChooserDialog deviceChooser = new DeviceChooserDialog(false);
         AndroidDebugBridge.addDeviceChangeListener(new DeviceChangeListener(deviceChooser));
-        AndroidDebugBridge adb = AndroidSdkUtils.getDebugBridge(project);
+        final AndroidDebugBridge adb = AndroidSdkUtils.getDebugBridge(project);
         deviceChooser.addDevices(adb.getDevices());
         deviceChooser.show();
         if (deviceChooser.isOK()) {
@@ -86,13 +87,13 @@ public class UninstallAction extends AnAction {
      * @param devices           list of {@link IDevice} objects
      * @param progressIndicator {@link ProgressIndicator} for the process command executed in.
      */
-    private void uninstallFromDevices(List<IDevice> devices, ProgressIndicator progressIndicator) {
-        Module runningModule = getModule();
+    private void uninstallFromDevices(@NotNull final List<IDevice> devices, @NotNull final ProgressIndicator progressIndicator) {
+        final Module runningModule = getModule();
         if (runningModule == null) {
             return;
         }
-        String packageName = AndroidFacet.getInstance(runningModule).getManifest().getPackage().getStringValue();
-        for (IDevice device : devices) {
+        final String packageName = AndroidFacet.getInstance(getModule()).getAndroidModel().getApplicationId();
+        for (final IDevice device : devices) {
             try {
                 progressIndicator.setText("Uninstalling " + packageName + " from " + DeviceUtils.getDeviceDisplayName(device));
                 uninstallFromDevice(device, packageName);
@@ -110,11 +111,10 @@ public class UninstallAction extends AnAction {
      * @param packageName name of the package which should be uninstalled
      * @throws UninstallException in case of errors
      */
-    private void uninstallFromDevice(IDevice device, String packageName) throws UninstallException {
+    private void uninstallFromDevice(@NotNull final IDevice device, @NotNull final String packageName) throws UninstallException {
         try {
-            //TODO: find more appropriate user notification message
             device.uninstallPackage(packageName);
-            showNotification("Application successfully uninstalled from " + DeviceUtils.getDeviceDisplayName(device), NotificationType.INFORMATION);
+            showNotification("App [" + packageName + "] successfully uninstalled from " + DeviceUtils.getDeviceDisplayName(device), NotificationType.INFORMATION);
         } catch (Exception ex) {
             throw new UninstallException(ex.getMessage(), ex);
         }
@@ -128,14 +128,14 @@ public class UninstallAction extends AnAction {
      */
     @Nullable
     private Module getModule() {
-        RunManager runManager = RunManager.getInstance(project);
-        RunnerAndConfigurationSettings configurationSettings = runManager.getSelectedConfiguration();
+        final RunManager runManager = RunManager.getInstance(project);
+        final RunnerAndConfigurationSettings configurationSettings = runManager.getSelectedConfiguration();
         if (configurationSettings == null) {
             showNotification("Run Configuration is not defined", NotificationType.ERROR);
             return null;
         }
-        ModuleBasedConfiguration selectedConfiguration = (ModuleBasedConfiguration) configurationSettings.getConfiguration();
-        Module module = selectedConfiguration.getConfigurationModule().getModule();
+        final ModuleBasedConfiguration selectedConfiguration = (ModuleBasedConfiguration) configurationSettings.getConfiguration();
+        final Module module = selectedConfiguration.getConfigurationModule().getModule();
         if (module == null) {
             showNotification("Module is not specified for selected Run Configuration", NotificationType.ERROR);
         }
@@ -149,10 +149,20 @@ public class UninstallAction extends AnAction {
      * @param message notification's message
      * @param type    one of the {@link NotificationType}
      */
-    private void showNotification(@NotNull String message, @NotNull NotificationType type) {
-        Notifications.Bus.notify(new Notification(ADB_UNINSTALL_ID,
-                NOTIFICATION_TITLE, message,
-                type));
+    private void showNotification(@NotNull final String message, @NotNull final NotificationType type) {
+        ApplicationManager.getApplication().invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                final Notification notification = new Notification(ADB_UNINSTALL_ID, NOTIFICATION_TITLE, message, type);
+                Notifications.Bus.notify(notification);
+                new Timer(NOTIFICATION_EXPIRE_DELAY, new AbstractAction() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        notification.expire();
+                    }
+                }).start();
+            }
+        });
     }
 
     /**
@@ -161,12 +171,12 @@ public class UninstallAction extends AnAction {
     private class DeviceChangeListener implements AndroidDebugBridge.IDeviceChangeListener {
         private DeviceChooserDialog deviceChooser;
 
-        private DeviceChangeListener(DeviceChooserDialog deviceChooser) {
+        private DeviceChangeListener(@NotNull final DeviceChooserDialog deviceChooser) {
             this.deviceChooser = deviceChooser;
         }
 
         @Override
-        public void deviceConnected(final IDevice iDevice) {
+        public void deviceConnected(@NotNull final IDevice iDevice) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -176,7 +186,7 @@ public class UninstallAction extends AnAction {
         }
 
         @Override
-        public void deviceDisconnected(final IDevice iDevice) {
+        public void deviceDisconnected(@NotNull final IDevice iDevice) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -186,7 +196,7 @@ public class UninstallAction extends AnAction {
         }
 
         @Override
-        public void deviceChanged(IDevice iDevice, int i) {
+        public void deviceChanged(@NotNull final IDevice iDevice, int i) {
         }
     }
 }
