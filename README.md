@@ -10,12 +10,12 @@ Android Studio/Intellij IDEA plugin which provides simple visual uninstalling su
 ## Installation
    Plugin is available for installation from official [JetBrains plugin repository](http://plugins.jetbrains.com/plugin/7326?pr=androidstudio).
    
-   Or, from binary file:
-   Settings → Plugins → Install plugin from disk…
+   Or, from binary file (Releases page):
+   IDE: Settings → Plugins → Install plugin from disk…
 
 ## Note
-If, for some reason, this plugin doesn't work for you and you want to help me fix it.<br>
-Please, run you IDE from the command line, try to reproduce the bug and send me all exceptions from the command line output related to com.vv.adbuninstall package.<br>
+You found a bug and you want me to fix it?<br>
+Please, run your IDE from the command line, try to reproduce the bug and attach the command line output to your issue.<br>
 Thank you.
 
 ## License
