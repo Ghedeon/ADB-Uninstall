@@ -1,14 +1,15 @@
 <idea-plugin version="2">
     <id>com.vv.adbuninstall</id>
     <name>ADB Uninstall</name>
-    <version>1.1.1</version>
-    <vendor email="vitali.vasilioglo@gmail.com">Vitali Vasilioglo</vendor>
+    <version>1.1.2</version>
+    <vendor email="asfalit@gmail.com">Ghedeon</vendor>
 
     <description>Provides simple visual uninstalling support for the current application.</description>
 
     <change-notes>
         <![CDATA[
-            Completely new code base. Switched to native utilities from the android plugin.
+            Fix: <a href="https://github.com/Ghedeon/ADB-Uninstall/issues/8">Gradle app id is ommited #8</a>
+            Fix: <a href="https://github.com/Ghedeon/ADB-Uninstall/issues/9">Uninstalled wrong app #9</a>
         ]]>
     </change-notes>
 
