@@ -1,3 +1,4 @@
-out
-.idea/workspace.xml
-.idea/misc.xml
+.idea
+.gradle
+build
+local.properties

@@ -1,0 +1,21 @@
+<idea-plugin>
+    <id>com.vv.adbuninstall</id>
+    <name>ADB Uninstall</name>
+    <vendor email="asfalit@gmail.com">Ghedeon</vendor>
+
+    <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+         on how to target different products -->
+    <depends>org.jetbrains.android</depends>
+    <depends>com.intellij.java</depends>
+    <depends>com.intellij.modules.java</depends>
+    <depends>org.jetbrains.kotlin</depends>
+
+    <actions>
+        <action id="ADB Uninstall" class="com.vv.adbuninstall.UninstallAction" text="ADB Uninstall" description="Uninstalls the current project's application"
+                icon="/icons/icon.png">
+            <add-to-group group-id="AndroidToolsGroup"/>
+            <add-to-group group-id="ToolbarRunGroup" anchor="after" relative-to-action="RunnerActions"/>
+            <keyboard-shortcut first-keystroke="altGraph U" keymap="$default"/>
+        </action>
+    </actions>
+</idea-plugin>

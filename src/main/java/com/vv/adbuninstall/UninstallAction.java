@@ -18,6 +18,8 @@ package com.vv.adbuninstall;
 
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
+import com.android.tools.idea.gradle.project.model.AndroidModuleModel;
+import com.android.tools.idea.run.AndroidRunState;
 import com.intellij.execution.RunManager;
 import com.intellij.execution.RunnerAndConfigurationSettings;
 import com.intellij.execution.configurations.ModuleBasedConfiguration;
@@ -34,7 +36,9 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import com.vv.adbuninstall.presentation.DeviceChooserDialog;
 import org.jetbrains.android.facet.AndroidFacet;
+
 import org.jetbrains.android.sdk.AndroidSdkUtils;
+import org.jetbrains.android.util.AndroidUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,7 +96,7 @@ public class UninstallAction extends AnAction {
         if (runningModule == null) {
             return;
         }
-        final String packageName = AndroidFacet.getInstance(getModule()).getAndroidModel().getApplicationId();
+        final String packageName = AndroidModuleModel.get(runningModule).getApplicationId();
         for (final IDevice device : devices) {
             try {
                 progressIndicator.setText("Uninstalling " + packageName + " from " + DeviceUtils.getDeviceDisplayName(device));
