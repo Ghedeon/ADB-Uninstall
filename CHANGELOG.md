@@ -2,6 +2,10 @@
 
 # ADB-Uninstall Changelog
 
+## [1.1.5]
+### Changed
+- support `untilBuild = 223`, `platform = 223.8617.56`
+
 ## [1.1.4]
 ### Changed
 - pushed `sinceBuild = 192`, `platform = 2019.2`

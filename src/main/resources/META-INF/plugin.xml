@@ -6,9 +6,13 @@
     <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
          on how to target different products -->
     <depends>org.jetbrains.android</depends>
+
+<!-- For AS specific features-->
+<!-- <depends>com.intellij.modules.androidstudio</depends>-->
+
     <depends>com.intellij.java</depends>
     <depends>com.intellij.modules.java</depends>
-    <depends>org.jetbrains.kotlin</depends>
+<!--    <depends>org.jetbrains.kotlin</depends>-->
 
     <actions>
         <action id="ADB Uninstall" class="com.vv.adbuninstall.UninstallAction" text="ADB Uninstall" description="Uninstalls the current project's application"

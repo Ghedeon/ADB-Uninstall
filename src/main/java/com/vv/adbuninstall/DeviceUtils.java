@@ -25,11 +25,6 @@ import org.jetbrains.annotations.NotNull;
  * @author Ghedeon <asfalit@gmail.com>
  */
 public class DeviceUtils {
-
-    private static final String MANUFACTURER = "ro.product.manufacturer";
-    private static final String MODEL = "ro.product.model";
-
-
     /**
      * Returns the device's human-readable name.
      *
@@ -44,11 +39,11 @@ public class DeviceUtils {
             if (device.isEmulator()) {
                 sb.append("Emulator ").append(device.getAvdName()).append(" ");
             } else {
-                property = device.getProperty(MANUFACTURER);
+                property = device.getProperty(IDevice.PROP_DEVICE_MANUFACTURER);
                 if (property != null && !property.isEmpty() && !"unknown".equalsIgnoreCase(property)) {
                     sb.append(Character.toUpperCase(property.charAt(0))).append(property.substring(1)).append(" ");
                 }
-                property = device.getProperty(MODEL);
+                property = device.getProperty(IDevice.PROP_DEVICE_MODEL);
                 if (property != null && !property.isEmpty()) {
                     sb.append(property).append(" ");
                 }
